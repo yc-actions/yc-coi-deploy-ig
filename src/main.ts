@@ -31,9 +31,6 @@ interface InstanceGroupSpec {
 
 interface InstanceGroupUpdateSpec {
   instance_group_id: string;
-  update_mask: {
-    paths: string[];
-  };
   name: string;
   description: string | undefined;
 }
@@ -138,9 +135,6 @@ async function updateIg(
   delete instanceGroupSpec.folder_id;
   const updateSpec: InstanceGroupUpdateSpec = {
     instance_group_id: igId,
-    update_mask: {
-      paths: Object.keys(instanceGroupSpec),
-    },
     ...instanceGroupSpec,
   };
   const op = await instanceGroupService.updateFromYaml(
