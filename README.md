@@ -59,3 +59,18 @@ the `compute.admin`, `vpc.admin`, and `iam.serviceAccounts.user` roles or greate
 ## License Summary
 
 This code is made available under the MIT license.
+
+## Adding schema validation for spec.yaml in JetBrains IDEs
+
+In the IDE press `cmd + ,` to open Preferences dialog.
+1. Then type `schema` in the search input
+2. Select `JSON Schema Mappings`
+3. Add new mapping
+4. Insert `https://raw.githubusercontent.com/yc-actions/yc-coi-deploy-ig/main/schema/CreateInstanceGroupRequest.json`
+    into Schema file or URL input
+5. Add file or pattern to apply the schema to.
+
+![prefernces screenshot](schema/prefernces.png)
+
+Now you'll get some suggestions when you'll type. Also, param types are checked and errors are highlighted.
+![suggest](schema/suggest.png)
