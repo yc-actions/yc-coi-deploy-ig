@@ -1,0 +1,937 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$ref": "#/definitions/CreateInstanceGroupRequest",
+    "definitions": {
+        "CreateInstanceGroupRequest": {
+            "properties": {
+                "folder_id": {
+                    "type": "string",
+                    "description": "ID of the folder to create an instance group in. To get the folder ID, use a [yandex.cloud.resourcemanager.v1.FolderService.List] request."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the instance group."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the instance group."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Resource labels as `key:value` pairs."
+                },
+                "instance_template": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.InstanceTemplate",
+                    "additionalProperties": true,
+                    "description": "Instance template that the instance group belongs to."
+                },
+                "scale_policy": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy",
+                    "additionalProperties": true,
+                    "description": "[Scaling policy](/docs/compute/concepts/instance-groups/scale) of the instance group."
+                },
+                "deploy_policy": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.DeployPolicy",
+                    "additionalProperties": true,
+                    "description": "Deployment policy of the instance group."
+                },
+                "allocation_policy": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AllocationPolicy",
+                    "additionalProperties": true,
+                    "description": "Allocation policy of the instance group by zones and regions."
+                },
+                "load_balancer_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.LoadBalancerSpec",
+                    "additionalProperties": true,
+                    "description": "Settings for balancing load between instances via [Network Load Balancer](/docs/network-load-balancer/concepts) (OSI model layer 3). If specified, a Network Load Balancer target group containing all instances from the instance group will be created and attributed to the instance group."
+                },
+                "health_checks_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthChecksSpec",
+                    "additionalProperties": true,
+                    "description": "Health checking specification. For more information, see [Health check](/docs/load-balancer/concepts/health-check)."
+                },
+                "service_account_id": {
+                    "type": "string",
+                    "description": "ID of the service account. The service account will be used for all API calls made by the Instance Groups component on behalf of the user (for example, creating instances, adding them to load balancer target group, etc.). For more information, see [Service accounts](/docs/iam/concepts/users/service-accounts). To get the service account ID, use a [yandex.cloud.iam.v1.ServiceAccountService.List] request."
+                },
+                "variables": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.Variable"
+                    },
+                    "type": "array"
+                },
+                "deletion_protection": {
+                    "type": "boolean",
+                    "description": "Flag prohibiting deletion of the instance group. Allowed values:\u003c/br\u003e- `false`: The instance group can be deleted.\u003c/br\u003e- `true`: The instance group cannot be deleted. The default is `false`."
+                },
+                "application_load_balancer_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ApplicationLoadBalancerSpec",
+                    "additionalProperties": true,
+                    "description": "Settings for balancing load between instances via [Application Load Balancer](/docs/application-load-balancer/concepts) (OSI model layer 7). If specified, an Application Load Balancer target group containing all instances from the instance group will be created and attributed to the instance group."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Create Instance Group Request"
+        },
+        "yandex.cloud.compute.v1.instancegroup.AllocationPolicy": {
+            "properties": {
+                "zones": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AllocationPolicy.Zone"
+                    },
+                    "type": "array",
+                    "description": "List of availability zones."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Allocation Policy"
+        },
+        "yandex.cloud.compute.v1.instancegroup.AllocationPolicy.Zone": {
+            "properties": {
+                "zone_id": {
+                    "type": "string",
+                    "description": "ID of the availability zone where the instance resides."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Zone"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ApplicationLoadBalancerSpec": {
+            "properties": {
+                "target_group_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ApplicationTargetGroupSpec",
+                    "additionalProperties": true,
+                    "description": "Basic properties of the Application Load Balancer target group attributed to the instance group."
+                },
+                "max_opening_traffic_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Timeout for waiting for the VM to be checked by the load balancer. If the timeout is exceeded, the VM will be turned off based on the deployment policy. Specified in seconds.",
+                    "format": "regex"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Application Load Balancer Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ApplicationTargetGroupSpec": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the target group."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the target group."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Resource labels as `key:value` pairs."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Application Target Group Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.AttachedDiskSpec": {
+            "properties": {
+                "mode": {
+                    "enum": [
+                        "MODE_UNSPECIFIED",
+                        0,
+                        "READ_ONLY",
+                        1,
+                        "READ_WRITE",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Mode"
+                },
+                "device_name": {
+                    "type": "string",
+                    "description": "Serial number that is reflected in the /dev/disk/by-id/ tree of a Linux operating system running within the instance. This value can be used to reference the device for mounting, resizing, and so on, from within the instance."
+                },
+                "disk_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AttachedDiskSpec.DiskSpec",
+                    "additionalProperties": true,
+                    "description": "oneof disk_spec or disk_id Disk specification that is attached to the instance. For more information, see [Disks](/docs/compute/concepts/disk)."
+                },
+                "disk_id": {
+                    "type": "string",
+                    "description": "Set to use an existing disk. To set use variables."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attached Disk Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.AttachedDiskSpec.DiskSpec": {
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of the disk."
+                },
+                "type_id": {
+                    "type": "string",
+                    "description": "ID of the disk type."
+                },
+                "size": {
+                    "type": "string",
+                    "description": "Size of the disk, specified in bytes."
+                },
+                "image_id": {
+                    "type": "string",
+                    "description": "ID of the image that will be used for disk creation."
+                },
+                "snapshot_id": {
+                    "type": "string",
+                    "description": "ID of the snapshot that will be used for disk creation."
+                },
+                "preserve_after_instance_delete": {
+                    "type": "boolean",
+                    "description": "When set to true, disk will not be deleted even after managed instance is deleted. It will be a user's responsibility to delete such disks."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Disk Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.AttachedFilesystemSpec": {
+            "properties": {
+                "mode": {
+                    "enum": [
+                        "MODE_UNSPECIFIED",
+                        0,
+                        "READ_ONLY",
+                        1,
+                        "READ_WRITE",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Mode"
+                },
+                "device_name": {
+                    "type": "string",
+                    "description": "Name of the device representing the filesystem on the instance. The name should be used for referencing the filesystem from within the instance when it's being mounted, resized etc. If not specified, a random value will be generated."
+                },
+                "filesystem_id": {
+                    "type": "string",
+                    "description": "ID of the filesystem that should be attached."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attached Filesystem Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.DeployPolicy": {
+            "properties": {
+                "max_unavailable": {
+                    "type": "string",
+                    "description": "The maximum number of running instances that can be taken offline (i.e., stopped or deleted) at the same time during the update process. If [max_expansion] is not specified or set to zero, [max_unavailable] must be set to a non-zero value."
+                },
+                "max_deleting": {
+                    "type": "string",
+                    "description": "The maximum number of instances that can be deleted at the same time.The value 0 is any number of virtual machines within the allowed values."
+                },
+                "max_creating": {
+                    "type": "string",
+                    "description": "The maximum number of instances that can be created at the same time.The value 0 is any number of virtual machines within the allowed values."
+                },
+                "max_expansion": {
+                    "type": "string",
+                    "description": "The maximum number of instances that can be temporarily allocated above the group's target size during the update process. If [max_unavailable] is not specified or set to zero, [max_expansion] must be set to a non-zero value."
+                },
+                "startup_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Instance startup duration. Instance will be considered up and running (and start receiving traffic) only after startup_duration has elapsed and all health checks are passed. See [yandex.cloud.compute.v1.instancegroup.ManagedInstance.Status] for more information.",
+                    "format": "regex"
+                },
+                "strategy": {
+                    "enum": [
+                        "STRATEGY_UNSPECIFIED",
+                        0,
+                        "PROACTIVE",
+                        1,
+                        "OPPORTUNISTIC",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Strategy"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Deploy Policy"
+        },
+        "yandex.cloud.compute.v1.instancegroup.DnsRecordSpec": {
+            "properties": {
+                "fqdn": {
+                    "type": "string",
+                    "description": "FQDN (required)"
+                },
+                "dns_zone_id": {
+                    "type": "string",
+                    "description": "DNS zone id (optional, if not set, private zone used)"
+                },
+                "ttl": {
+                    "type": "string",
+                    "description": "DNS record ttl, values in 0-86400 (optional)"
+                },
+                "ptr": {
+                    "type": "boolean",
+                    "description": "When set to true, also create PTR DNS record (optional)"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Dns Record Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.HealthCheckSpec": {
+            "properties": {
+                "interval": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "The interval between health checks. The default is 2 seconds.",
+                    "format": "regex"
+                },
+                "timeout": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Timeout for the managed instance to return a response for the health check. The default is 1 second.",
+                    "format": "regex"
+                },
+                "unhealthy_threshold": {
+                    "type": "string",
+                    "description": "The number of failed health checks for the managed instance to be considered unhealthy. The default (0) is 2."
+                },
+                "healthy_threshold": {
+                    "type": "string",
+                    "description": "The number of successful health checks required in order for the managed instance to be considered healthy. The default (0) is 2."
+                },
+                "tcp_options": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthCheckSpec.TcpOptions",
+                    "additionalProperties": true,
+                    "description": "Configuration options for a TCP health check."
+                },
+                "http_options": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthCheckSpec.HttpOptions",
+                    "additionalProperties": true,
+                    "description": "Configuration options for an HTTP health check."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Health Check Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.HealthCheckSpec.HttpOptions": {
+            "properties": {
+                "port": {
+                    "type": "string",
+                    "description": "Port to use for HTTP health checks."
+                },
+                "path": {
+                    "type": "string",
+                    "description": "URL path to set for health checking requests."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Http Options"
+        },
+        "yandex.cloud.compute.v1.instancegroup.HealthCheckSpec.TcpOptions": {
+            "properties": {
+                "port": {
+                    "type": "string",
+                    "description": "Port to use for TCP health checks."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Tcp Options"
+        },
+        "yandex.cloud.compute.v1.instancegroup.HealthChecksSpec": {
+            "properties": {
+                "health_check_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthCheckSpec"
+                    },
+                    "type": "array",
+                    "description": "Health checking specification. For more information, see [Health check](/docs/load-balancer/concepts/health-check)."
+                },
+                "max_checking_health_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Timeout for waiting for the VM to become healthy. If the timeout is exceeded, the VM will be turned off based on the deployment policy. Specified in seconds.",
+                    "format": "regex"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Health Checks Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.InstanceTemplate": {
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of the instance template."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Resource labels as `key:value` pairs."
+                },
+                "platform_id": {
+                    "type": "string",
+                    "description": "ID of the hardware platform configuration for the instance. Platforms allows you to create various types of instances: with a large amount of memory, with a large number of cores, with a burstable performance. For more information, see [Platforms](/docs/compute/concepts/vm-platforms)."
+                },
+                "resources_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ResourcesSpec",
+                    "additionalProperties": true,
+                    "description": "Computing resources of the instance such as the amount of memory and number of cores."
+                },
+                "metadata": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "The metadata `key:value` pairs assigned to this instance template. This includes custom metadata and predefined keys. Metadata values may contain one of the supported placeholders:   {instance_group.id}   {instance.short_id}   {instance.index}   {instance.index_in_zone}   {instance.zone_id} InstanceGroup and Instance labels may be copied to metadata following way:   {instance_group.labels.some_label_key}   {instance.labels.another_label_key} These placeholders will be substituted for each created instance anywhere in the value text. In the rare case the value requires to contain this placeholder explicitly, it must be escaped with double brackets, in example {instance.index}. For example, you may use the metadata in order to provide your public SSH key to the instance. For more information, see [Metadata](/docs/compute/concepts/vm-metadata)."
+                },
+                "boot_disk_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AttachedDiskSpec",
+                    "additionalProperties": true,
+                    "description": "Boot disk specification that will be attached to the instance."
+                },
+                "secondary_disk_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AttachedDiskSpec"
+                    },
+                    "type": "array",
+                    "description": "Array of secondary disks that will be attached to the instance."
+                },
+                "network_interface_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.NetworkInterfaceSpec"
+                    },
+                    "type": "array",
+                    "description": "Array of network interfaces that will be attached to the instance."
+                },
+                "scheduling_policy": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.SchedulingPolicy",
+                    "additionalProperties": true,
+                    "description": "Scheduling policy for the instance."
+                },
+                "service_account_id": {
+                    "type": "string",
+                    "description": "Service account ID for the instance."
+                },
+                "network_settings": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.NetworkSettings",
+                    "additionalProperties": true,
+                    "description": "Network settings for the instance."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the instance. In order to be unique it must contain at least on of instance unique placeholders:   {instance.short_id}   {instance.index}   combination of {instance.zone_id} and {instance.index_in_zone} Example: my-instance-{instance.index} If not set, default is used: {instance_group.id}-{instance.short_id} It may also contain another placeholders, see metadata doc for full list."
+                },
+                "hostname": {
+                    "type": "string",
+                    "description": "Host name for the instance. This field is used to generate the [yandex.cloud.compute.v1.Instance.fqdn] value. The host name must be unique within the network and region. If not specified, the host name will be equal to [yandex.cloud.compute.v1.Instance.id] of the instance and FQDN will be `\u003cid\u003e.auto.internal`. Otherwise FQDN will be `\u003chostname\u003e.\u003cregion_id\u003e.internal`. In order to be unique it must contain at least on of instance unique placeholders:   {instance.short_id}   {instance.index}   combination of {instance.zone_id} and {instance.index_in_zone} Example: my-instance-{instance.index} If not set, `name` value will be used It may also contain another placeholders, see metadata doc for full list."
+                },
+                "placement_policy": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.PlacementPolicy",
+                    "additionalProperties": true,
+                    "description": "Placement Group"
+                },
+                "filesystem_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.AttachedFilesystemSpec"
+                    },
+                    "type": "array",
+                    "description": "Array of filesystems to attach to the instance. The filesystems must reside in the same availability zone as the instance. To use the instance with an attached filesystem, the latter must be mounted. For details, see [documentation](/docs/compute/operations/filesystem/attach-to-vm)."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Instance Template"
+        },
+        "yandex.cloud.compute.v1.instancegroup.LoadBalancerSpec": {
+            "properties": {
+                "target_group_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.TargetGroupSpec",
+                    "additionalProperties": true,
+                    "description": "Specification of the target group that the instance group will be added to. For more information, see [Target groups and resources](/docs/load-balancer/concepts/target-resources)."
+                },
+                "max_opening_traffic_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Timeout for waiting for the VM to be checked by the load balancer. If the timeout is exceeded, the VM will be turned off based on the deployment policy. Specified in seconds.",
+                    "format": "regex"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Load Balancer Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.NetworkInterfaceSpec": {
+            "properties": {
+                "network_id": {
+                    "type": "string",
+                    "description": "ID of the network."
+                },
+                "subnet_ids": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "IDs of the subnets."
+                },
+                "primary_v4_address_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.PrimaryAddressSpec",
+                    "additionalProperties": true,
+                    "description": "Primary IPv4 address that is assigned to the instance for this network interface."
+                },
+                "primary_v6_address_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.PrimaryAddressSpec",
+                    "additionalProperties": true,
+                    "description": "Primary IPv6 address that is assigned to the instance for this network interface. IPv6 not available yet."
+                },
+                "security_group_ids": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "IDs of security groups."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Network Interface Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.NetworkSettings": {
+            "properties": {
+                "type": {
+                    "enum": [
+                        "TYPE_UNSPECIFIED",
+                        0,
+                        "STANDARD",
+                        1,
+                        "SOFTWARE_ACCELERATED",
+                        2,
+                        "HARDWARE_ACCELERATED",
+                        3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Type"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Network Settings"
+        },
+        "yandex.cloud.compute.v1.instancegroup.OneToOneNatSpec": {
+            "properties": {
+                "ip_version": {
+                    "enum": [
+                        "IP_VERSION_UNSPECIFIED",
+                        0,
+                        "IPV4",
+                        1,
+                        "IPV6",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Ip Version"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Manual set static public IP. To set use variables. (optional)"
+                },
+                "dns_record_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.DnsRecordSpec"
+                    },
+                    "type": "array",
+                    "description": "External DNS configuration"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "One To One Nat Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.PlacementPolicy": {
+            "properties": {
+                "placement_group_id": {
+                    "type": "string",
+                    "description": "Identifier of placement group"
+                },
+                "host_affinity_rules": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.PlacementPolicy.HostAffinityRule"
+                    },
+                    "type": "array",
+                    "description": "List of affinity rules. Scheduler will attempt to allocate instances according to order of rules."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Placement Policy"
+        },
+        "yandex.cloud.compute.v1.instancegroup.PlacementPolicy.HostAffinityRule": {
+            "properties": {
+                "key": {
+                    "type": "string",
+                    "description": "Affinity label or one of reserved values - 'yc.hostId', 'yc.hostGroupId'"
+                },
+                "op": {
+                    "enum": [
+                        "OPERATOR_UNSPECIFIED",
+                        0,
+                        "IN",
+                        1,
+                        "NOT_IN",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Operator"
+                },
+                "values": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Affinity value or host ID or host group ID"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Host Affinity Rule",
+            "description": "Affinity definition"
+        },
+        "yandex.cloud.compute.v1.instancegroup.PrimaryAddressSpec": {
+            "properties": {
+                "one_to_one_nat_spec": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.OneToOneNatSpec",
+                    "additionalProperties": true,
+                    "description": "An external IP address configuration. If not specified, then this managed instance will have no external internet access."
+                },
+                "dns_record_specs": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.DnsRecordSpec"
+                    },
+                    "type": "array",
+                    "description": "Internal DNS configuration"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Optional. Manual set static internal IP. To set use variables."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Primary Address Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ResourcesSpec": {
+            "properties": {
+                "memory": {
+                    "type": "string",
+                    "description": "The amount of memory available to the instance, specified in bytes."
+                },
+                "cores": {
+                    "type": "string",
+                    "description": "The number of cores available to the instance."
+                },
+                "core_fraction": {
+                    "type": "string",
+                    "description": "Baseline level of CPU performance with the ability to burst performance above that baseline level. This field sets baseline performance for each core."
+                },
+                "gpus": {
+                    "type": "string",
+                    "description": "The number of GPUs available to the instance."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Resources Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ScalePolicy": {
+            "properties": {
+                "fixed_scale": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy.FixedScale",
+                    "additionalProperties": true,
+                    "description": "[Manual scaling policy](/docs/compute/concepts/instance-groups/scale#fixed-policy) of the instance group."
+                },
+                "auto_scale": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy.AutoScale",
+                    "additionalProperties": true,
+                    "description": "[Automatic scaling policy](/docs/compute/concepts/instance-groups/scale#auto-scale) of the instance group."
+                },
+                "test_auto_scale": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy.AutoScale",
+                    "additionalProperties": true,
+                    "description": "Test spec for [automatic scaling policy](/docs/compute/concepts/instance-groups/scale#auto-scale) of the instance group."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Scale Policy"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ScalePolicy.AutoScale": {
+            "properties": {
+                "min_zone_size": {
+                    "type": "string",
+                    "description": "Lower limit for instance count in each zone."
+                },
+                "max_size": {
+                    "type": "string",
+                    "description": "Upper limit for total instance count (across all zones). 0 means maximum limit = 100."
+                },
+                "measurement_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Time in seconds allotted for averaging metrics. 1 minute by default.",
+                    "format": "regex"
+                },
+                "warmup_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "The warmup time of the instance in seconds. During this time, traffic is sent to the instance, but instance metrics are not collected.",
+                    "format": "regex"
+                },
+                "stabilization_duration": {
+                    "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
+                    "type": "string",
+                    "description": "Minimum amount of time in seconds allotted for monitoring before Instance Groups can reduce the number of instances in the group. During this time, the group size doesn't decrease, even if the new metric values indicate that it should.",
+                    "format": "regex"
+                },
+                "initial_size": {
+                    "type": "string",
+                    "description": "Target group size."
+                },
+                "cpu_utilization_rule": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy.CpuUtilizationRule",
+                    "additionalProperties": true,
+                    "description": "Defines an autoscaling rule based on the average CPU utilization of the instance group. If more than one rule is specified, e.g. CPU utilization and one or more Monitoring metrics ([custom_rules]), the size of the instance group will be equal to the maximum of sizes calculated according to each metric."
+                },
+                "custom_rules": {
+                    "items": {
+                        "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.ScalePolicy.CustomRule"
+                    },
+                    "type": "array",
+                    "description": "Defines an autoscaling rule based on a [custom metric](/docs/monitoring/operations/metric/add) from Monitoring. If more than one rule is specified, e.g. CPU utilization ([cpu_utilization_rule]) and one or more Monitoring metrics, the size of the instance group will be equal to the maximum of sizes calculated according to each metric."
+                },
+                "auto_scale_type": {
+                    "enum": [
+                        "AUTO_SCALE_TYPE_UNSPECIFIED",
+                        0,
+                        "ZONAL",
+                        1,
+                        "REGIONAL",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Auto Scale Type"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Auto Scale"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ScalePolicy.CpuUtilizationRule": {
+            "properties": {
+                "utilization_target": {
+                    "type": "number",
+                    "description": "Target CPU utilization level. Instance Groups maintains this level for each availability zone."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Cpu Utilization Rule"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ScalePolicy.CustomRule": {
+            "properties": {
+                "rule_type": {
+                    "enum": [
+                        "RULE_TYPE_UNSPECIFIED",
+                        0,
+                        "UTILIZATION",
+                        1,
+                        "WORKLOAD",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Rule Type"
+                },
+                "metric_type": {
+                    "enum": [
+                        "METRIC_TYPE_UNSPECIFIED",
+                        0,
+                        "GAUGE",
+                        1,
+                        "COUNTER",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Metric Type"
+                },
+                "metric_name": {
+                    "type": "string",
+                    "description": "Name of custom metric in Monitoring that should be used for scaling."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Labels of custom metric in Monitoring that should be used for scaling."
+                },
+                "target": {
+                    "type": "number",
+                    "description": "Target value for the custom metric. Instance Groups maintains this level for each availability zone."
+                },
+                "folder_id": {
+                    "type": "string",
+                    "description": "Folder id of custom metric in Monitoring that should be used for scaling."
+                },
+                "service": {
+                    "type": "string",
+                    "description": "Service of custom metric in Monitoring that should be used for scaling."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Custom Rule"
+        },
+        "yandex.cloud.compute.v1.instancegroup.ScalePolicy.FixedScale": {
+            "properties": {
+                "size": {
+                    "type": "string",
+                    "description": "Number of instances in the instance group."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Fixed Scale"
+        },
+        "yandex.cloud.compute.v1.instancegroup.SchedulingPolicy": {
+            "properties": {
+                "preemptible": {
+                    "type": "boolean",
+                    "description": "Preemptible instances are stopped at least once every 24 hours, and can be stopped at any time if their resources are needed by Compute. For more information, see [Preemptible Virtual Machines](/docs/compute/concepts/preemptible-vm)."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Scheduling Policy"
+        },
+        "yandex.cloud.compute.v1.instancegroup.TargetGroupSpec": {
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the target group."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the target group."
+                },
+                "labels": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object",
+                    "description": "Resource labels as `key:value` pairs."
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Target Group Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.Variable": {
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Variable"
+        }
+    }
+}

@@ -11,7 +11,8 @@
     "lint": "eslint src/**/*.ts --fix",
     "package": "ncc build --source-map --license licenses.txt",
     "test": "jest",
-    "all": "npm run build:swc && npm run format && npm run lint && npm run package && npm test"
+    "all": "npm run build:swc && npm run format && npm run lint && npm run package && npm test",
+    "schema": "protoc --jsonschema_out=messages=\\[CreateInstanceGroupRequest\\]:./schema --proto_path=cloudapi --proto_path=cloudapi/third_party/googleapis cloudapi/yandex/cloud/compute/v1/instancegroup/instance_group_service.proto"
   },
   "repository": {
     "type": "git",
