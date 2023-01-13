@@ -1,0 +1,33 @@
+name: 'YC Deploy Container to Instance Group'
+description: 'GitHub Action to deploy container to Instance group in Yandex Cloud'
+author: 'Nikolay Matrosov'
+inputs:
+  yc-sa-json-credentials:
+    required: true
+    description: 'Json containing authorized key for Service Account. More info https://cloud.yandex.ru/docs/container-registry/operations/authentication#sa-json'
+  folder-id:
+    required: true
+    description: 'Folder ID'
+  ig-spec-path:
+    required: true
+    description: >-
+      Path to the `spec.yaml` file inside repo.
+      YAML should contain object described in 
+      https://github.com/yandex-cloud/cloudapi/blob/master/yandex/cloud/compute/v1/instancegroup/instance_group_service.proto#L219
+  user-data-path:
+    required: true
+    description: 'Path to the `user-data.yaml` file inside repo.'
+  docker-compose-path:
+    required: true
+    description: 'Path to the `docker-compose.yaml` file inside repo.'
+outputs:
+  instance-group-id:
+    description: 'Instance Group ID'
+  created:
+    description: 'A flag that indicates whether instance was created or updated'
+branding:
+  color: blue
+  icon: upload-cloud
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
