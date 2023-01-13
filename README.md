@@ -53,7 +53,8 @@ See [action.yml](action.yml) for the full documentation for this action's inputs
 
 ## Permissions
 
-To perform this action, it is required that the service account on behalf of which we are acting has granted the `compute.admin` role or greater.
+To perform this action, it is required that the service account on behalf of which we are acting has granted 
+the `compute.admin`, `vpc.admin`, and `iam.serviceAccounts.user` roles or greater.
 
 ## License Summary
 
