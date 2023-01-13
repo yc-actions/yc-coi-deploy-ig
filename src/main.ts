@@ -24,7 +24,14 @@ import {fromServiceAccountJsonFile} from './service-account-json';
 
 // Partial interface with only fields used in the action.
 interface InstanceGroupSpec {
-  folder_id: string;
+  folder_id?: string;
+  name: string;
+  description: string | undefined;
+}
+
+interface InstanceGroupUpdateSpec {
+  instance_group_id: string;
+  update_mask: string;
   name: string;
   description: string | undefined;
 }
@@ -126,11 +133,16 @@ async function updateIg(
   core.startGroup('Update Instance Group');
 
   core.setOutput('created', 'false');
-
+  delete instanceGroupSpec.folder_id;
+  const updateSpec: InstanceGroupUpdateSpec = {
+    instance_group_id: igId,
+    update_mask: Object.keys(instanceGroupSpec).join(','),
+    ...instanceGroupSpec,
+  };
   const op = await instanceGroupService.updateFromYaml(
     UpdateInstanceGroupFromYamlRequest.fromPartial({
       instanceGroupId: igId,
-      instanceGroupYaml: YAML.stringify(instanceGroupSpec),
+      instanceGroupYaml: YAML.stringify(updateSpec),
     }),
   );
   const finishedOp = await waitForOperation(op, session);
