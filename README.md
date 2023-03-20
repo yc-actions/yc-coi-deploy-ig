@@ -1,7 +1,7 @@
 ## GitHub Action to deploy your container into Yandex Cloud instance group created from Container Optimized Image.
 
-The action creates a Instance Group with the provided name in the provided folder if there is no one. Then it deploys a container
-using the provided image name and tag.
+The action creates a Instance Group with the provided name in the provided folder if there is no one. Then it deploys a
+container using the provided image name and tag.
 
 **Table of Contents**
 
@@ -46,15 +46,19 @@ using the provided image name and tag.
         docker-compose-path: './docker-compose.yaml'
 ```
 
-Data from files `./spec.yaml`, `user-data.yaml`, and `docker-compose.yaml` will be passed to the Mustache template renderer,
-so there could be used environment variables substitution via `{{ env.VARIABLE }}` syntax.  
+Data from files `./spec.yaml`, `user-data.yaml`, and `docker-compose.yaml` will be passed to the Mustache template
+renderer,
+so there could be used environment variables substitution via `{{ env.VARIABLE }}` syntax.
 
 See [action.yml](action.yml) for the full documentation for this action's inputs and outputs.
 
 ## Permissions
 
-To perform this action, it is required that the service account on behalf of which we are acting has granted 
+To perform this action, it is required that the service account on behalf of which we are acting has granted
 the `compute.admin`, `vpc.admin`, and `iam.serviceAccounts.user` roles or greater.
+
+Also, you'll need to add `loadbalancer.admin` if you use auto creating load balancer target groups via instance group
+spec.
 
 ## License Summary
 
@@ -63,11 +67,12 @@ This code is made available under the MIT license.
 ## Adding schema validation for spec.yaml in JetBrains IDEs
 
 In the IDE press `cmd + ,` to open Preferences dialog.
+
 1. Then type `schema` in the search input
 2. Select `JSON Schema Mappings`
 3. Add new mapping
 4. Insert `https://raw.githubusercontent.com/yc-actions/yc-coi-deploy-ig/main/schema/CreateInstanceGroupRequest.json`
-    into Schema file or URL input
+   into Schema file or URL input
 5. Add file or pattern to apply the schema to.
 
 ![prefernces screenshot](schema/prefernces.png)
