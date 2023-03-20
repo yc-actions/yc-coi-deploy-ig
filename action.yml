@@ -20,6 +20,9 @@ inputs:
   docker-compose-path:
     required: true
     description: 'Path to the `docker-compose.yaml` file inside repo.'
+  api-endpoint:
+    required: false
+    description: 'Cloud API endpoint'
 outputs:
   instance-group-id:
     description: 'Instance Group ID'

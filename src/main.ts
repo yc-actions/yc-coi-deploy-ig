@@ -16,11 +16,13 @@ import {
   UpdateInstanceGroupFromYamlRequest,
 } from '@yandex-cloud/nodejs-sdk/dist/generated/yandex/cloud/compute/v1/instancegroup/instance_group_service';
 import {Operation} from '@yandex-cloud/nodejs-sdk/dist/generated/yandex/cloud/operation/operation';
+import {ServiceEndpointResolver} from '@yandex-cloud/nodejs-sdk/dist/service-endpoints';
 import * as fs from 'fs';
 import Mustache from 'mustache';
 import * as path from 'path';
 import YAML from 'yaml';
 import {fromServiceAccountJsonFile} from './service-account-json';
+import {serviceMapByEndpoint} from './service-endpoints';
 
 // Partial interface with only fields used in the action.
 interface InstanceGroupSpec {
@@ -59,6 +61,7 @@ interface ActionConfig {
   igSpecPath: string;
   userDataPath: string;
   dockerComposePath: string;
+  apiEndpoint: string;
 }
 
 function prepareConfig(filePath: string): string {
@@ -169,12 +172,17 @@ function parseInputs(): ActionConfig {
     required: true,
   });
 
+  const apiEndpoint: string = core.getInput('api-endpoint', {
+    required: false,
+  });
+
   core.endGroup();
   return {
     folderId,
     igSpecPath,
     userDataPath,
     dockerComposePath,
+    apiEndpoint,
   };
 }
 
@@ -192,7 +200,9 @@ async function run(): Promise<void> {
     const serviceAccountJson = fromServiceAccountJsonFile(JSON.parse(ycSaJsonCredentials));
     core.info('Parsed Service account JSON');
 
-    const session = new Session({serviceAccountJson});
+    const endpointMap = serviceMapByEndpoint(config.apiEndpoint);
+    const resolver = new ServiceEndpointResolver(endpointMap);
+    const session = new Session({serviceAccountJson}, resolver);
     const instanceGroupService = session.client(serviceClients.InstanceGroupServiceClient);
 
     const userData = prepareConfig(config.userDataPath);
