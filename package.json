@@ -41,7 +41,7 @@
     "@swc/jest": "^0.2.26",
     "@types/mustache": "^4.2.2",
     "@types/node": "^20.4.4",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^5.62.0",
     "@vercel/ncc": "^0.36.1",
     "dotenv": "^16.3.1",
