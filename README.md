@@ -55,6 +55,9 @@ so there could be used environment variables substitution via `{{ env.VARIABLE }
 
 See [action.yml](action.yml) for the full documentation for this action's inputs and outputs.
 
+> [!IMPORTANT]  
+> If you want to be able to override the API endpoint, stick to `v1`.
+
 ## Permissions
 
 To perform this action, it is required that the service account on behalf of which we are acting has granted
