@@ -1,5 +1,8 @@
 ## GitHub Action to deploy your container into Yandex Cloud instance group created from Container Optimized Image.
 
+[![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
+
+
 The action creates a Instance Group with the provided name in the provided folder if there is no one. Then it deploys a
 container using the provided image name and tag.
 
@@ -33,7 +36,7 @@ container using the provided image name and tag.
 
     - name: Deploy COI Instance Group
       id: deploy-coi
-      uses: yc-actions/yc-coi-deploy-ig@v1
+      uses: yc-actions/yc-coi-deploy-ig@v2
       env:
         CR_REGISTRY: crp00000000000000000
         CR_REPOSITORY: my-cr-repo
@@ -51,6 +54,9 @@ renderer,
 so there could be used environment variables substitution via `{{ env.VARIABLE }}` syntax.
 
 See [action.yml](action.yml) for the full documentation for this action's inputs and outputs.
+
+> [!IMPORTANT]  
+> If you want to be able to override the API endpoint, stick to `v1`.
 
 ## Permissions
 

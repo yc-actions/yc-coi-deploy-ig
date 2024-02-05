@@ -51,7 +51,7 @@
                 "health_checks_spec": {
                     "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthChecksSpec",
                     "additionalProperties": true,
-                    "description": "Health checking specification. For more information, see [Health check](/docs/load-balancer/concepts/health-check)."
+                    "description": "Health checking specification. For more information, see [Health check](/docs/network-load-balancer/concepts/health-check)."
                 },
                 "service_account_id": {
                     "type": "string",
@@ -96,6 +96,13 @@
                 "zone_id": {
                     "type": "string",
                     "description": "ID of the availability zone where the instance resides."
+                },
+                "instance_tags_pool": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "description": "Each instance in a zone will be associated with exactly one of a tag from a pool below. All specified tags must be unique across the whole group not only the zone. It is guaranteed that during whole deploy only tags from prefix of the specified list will be used. It is possible to use tag associated with instance in templating via {instance.tag}."
                 }
             },
             "additionalProperties": true,
@@ -114,6 +121,10 @@
                     "type": "string",
                     "description": "Timeout for waiting for the VM to be checked by the load balancer. If the timeout is exceeded, the VM will be turned off based on the deployment policy. Specified in seconds.",
                     "format": "regex"
+                },
+                "ignore_health_checks": {
+                    "type": "boolean",
+                    "description": "Do not wait load balancer health checks."
                 }
             },
             "additionalProperties": true,
@@ -175,6 +186,10 @@
                 "disk_id": {
                     "type": "string",
                     "description": "Set to use an existing disk. To set use variables."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "When set can be later used to change DiskSpec of actual disk."
                 }
             },
             "additionalProperties": true,
@@ -288,6 +303,27 @@
                         }
                     ],
                     "title": "Strategy"
+                },
+                "minimal_action": {
+                    "enum": [
+                        "MINIMAL_ACTION_UNSPECIFIED",
+                        0,
+                        "LIVE_UPDATE",
+                        1,
+                        "RESTART",
+                        2,
+                        "RECREATE",
+                        3
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Minimal Action"
                 }
             },
             "additionalProperties": true,
@@ -387,7 +423,7 @@
                         "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.HealthCheckSpec"
                     },
                     "type": "array",
-                    "description": "Health checking specification. For more information, see [Health check](/docs/load-balancer/concepts/health-check)."
+                    "description": "Health checking specification. For more information, see [Health check](/docs/network-load-balancer/concepts/health-check)."
                 },
                 "max_checking_health_duration": {
                     "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
@@ -481,6 +517,11 @@
                     },
                     "type": "array",
                     "description": "Array of filesystems to attach to the instance. The filesystems must reside in the same availability zone as the instance. To use the instance with an attached filesystem, the latter must be mounted. For details, see [documentation](/docs/compute/operations/filesystem/attach-to-vm)."
+                },
+                "metadata_options": {
+                    "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.MetadataOptions",
+                    "additionalProperties": true,
+                    "description": "Metadata options for the instance"
                 }
             },
             "additionalProperties": true,
@@ -492,18 +533,105 @@
                 "target_group_spec": {
                     "$ref": "#/definitions/yandex.cloud.compute.v1.instancegroup.TargetGroupSpec",
                     "additionalProperties": true,
-                    "description": "Specification of the target group that the instance group will be added to. For more information, see [Target groups and resources](/docs/load-balancer/concepts/target-resources)."
+                    "description": "Specification of the target group that the instance group will be added to. For more information, see [Target groups and resources](/docs/network-load-balancer/concepts/target-resources)."
                 },
                 "max_opening_traffic_duration": {
                     "pattern": "^([0-9]+\\.?[0-9]*|\\.[0-9]+)s$",
                     "type": "string",
                     "description": "Timeout for waiting for the VM to be checked by the load balancer. If the timeout is exceeded, the VM will be turned off based on the deployment policy. Specified in seconds.",
                     "format": "regex"
+                },
+                "ignore_health_checks": {
+                    "type": "boolean",
+                    "description": "Do not wait load balancer health checks."
                 }
             },
             "additionalProperties": true,
             "type": "object",
             "title": "Load Balancer Spec"
+        },
+        "yandex.cloud.compute.v1.instancegroup.MetadataOptions": {
+            "properties": {
+                "gce_http_endpoint": {
+                    "enum": [
+                        "METADATA_OPTION_UNSPECIFIED",
+                        0,
+                        "ENABLED",
+                        1,
+                        "DISABLED",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Metadata Option"
+                },
+                "aws_v1_http_endpoint": {
+                    "enum": [
+                        "METADATA_OPTION_UNSPECIFIED",
+                        0,
+                        "ENABLED",
+                        1,
+                        "DISABLED",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Metadata Option"
+                },
+                "gce_http_token": {
+                    "enum": [
+                        "METADATA_OPTION_UNSPECIFIED",
+                        0,
+                        "ENABLED",
+                        1,
+                        "DISABLED",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Metadata Option"
+                },
+                "aws_v1_http_token": {
+                    "enum": [
+                        "METADATA_OPTION_UNSPECIFIED",
+                        0,
+                        "ENABLED",
+                        1,
+                        "DISABLED",
+                        2
+                    ],
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        }
+                    ],
+                    "title": "Metadata Option"
+                }
+            },
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata Options"
         },
         "yandex.cloud.compute.v1.instancegroup.NetworkInterfaceSpec": {
             "properties": {
