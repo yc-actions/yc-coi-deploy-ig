@@ -118,7 +118,7 @@ async function createIg(
         core.info(`Created instance with id '${igId}'`)
         core.setOutput('created', 'true')
     } else {
-        core.error(`Failed to create instance group'`)
+        core.error(`Failed to create instance group`)
         throw new Error('Failed to create instance group')
     }
     setOutputs(finishedOp)
@@ -149,7 +149,7 @@ async function updateIg(
     if (finishedOp.response) {
         core.info(`Updated instance group with id '${igId}'`)
     } else {
-        core.error(`Failed to update instance group'`)
+        core.error(`Failed to update instance group`)
         throw new Error('Failed to update instance group')
     }
     setOutputs(op)
