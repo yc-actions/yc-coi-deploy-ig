@@ -38,7 +38,7 @@
     "@grpc/grpc-js": "^1.10.8",
     "@yandex-cloud/nodejs-sdk": "^2.7.4",
     "mustache": "^4.2.0",
-    "yaml": "^2.4.2"
+    "yaml": "^2.4.3"
   },
   "jest": {
     "preset": "ts-jest",
