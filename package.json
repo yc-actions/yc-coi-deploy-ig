@@ -68,7 +68,7 @@
     "@grpc/grpc-js": "^1.14.0",
     "@yandex-cloud/nodejs-sdk": "^2.9.0",
     "mustache": "^4.2.0",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
